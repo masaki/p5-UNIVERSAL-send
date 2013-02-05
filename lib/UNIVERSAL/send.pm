@@ -3,9 +3,25 @@ package UNIVERSAL::send;
 use 5.008001;
 use strict;
 use warnings;
+use Carp ();
+use UNIVERSAL ();
 
 our $VERSION = '0.01';
 $VERSION = eval $VERSION;
+
+sub __send__ {
+    my $self = shift;
+    my ($method, @args) = @_;
+
+    Carp::croak("No method name given.") unless defined $method;
+    return $self->$method(@args);
+}
+
+{
+    no warnings 'redefine';
+    *UNIVERSAL::send     = \&__send__;
+    *UNIVERSAL::__send__ = \&__send__;
+}
 
 1;
 
